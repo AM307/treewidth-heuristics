@@ -1,12 +1,17 @@
 package at.mategka.sda.elimination;
 
-import at.mategka.sda.elimination.result.*;
+import at.mategka.sda.elimination.result.EliminationResult;
+import at.mategka.sda.elimination.result.EmptyResult;
+import at.mategka.sda.elimination.result.VertexPrependResult;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.SimpleGraph;
 import org.jheaps.AddressableHeap;
 import org.jheaps.tree.FibonacciHeap;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
