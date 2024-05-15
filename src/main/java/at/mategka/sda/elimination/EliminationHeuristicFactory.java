@@ -2,9 +2,19 @@ package at.mategka.sda.elimination;
 
 import org.jgrapht.graph.SimpleGraph;
 
-@FunctionalInterface
-public interface EliminationHeuristicFactory<T extends EliminationHeuristic> {
+import java.util.List;
 
-    T newInstance(SimpleGraph<?, ?> graph);
+@FunctionalInterface
+public interface EliminationHeuristicFactory<V> {
+
+    EliminationHeuristic<V> newInstance(SimpleGraph<V, ?> graph);
+
+    default List<V> eliminationOrder(SimpleGraph<V, ?> graph) {
+        return newInstance(graph).eliminationOrder(graph);
+    }
+
+    default int treewidth(SimpleGraph<V, ?> graph) {
+        return newInstance(graph).treewidth(graph);
+    }
 
 }
