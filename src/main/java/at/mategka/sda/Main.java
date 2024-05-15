@@ -1,10 +1,16 @@
 package at.mategka.sda;
 
+import at.mategka.sda.elimination.EliminationHeuristicFactory;
+import at.mategka.sda.elimination.MaxCardinalityHeuristic;
+import at.mategka.sda.elimination.MinDegreeHeuristic;
+import at.mategka.sda.elimination.MinFillHeuristic;
 import at.mategka.sda.heuristics.EliminationHeuristic;
-import at.mategka.sda.heuristics.MaxCardinalityHeuristic;
 import at.mategka.sda.io.CsvGraphParser;
+import org.jgrapht.alg.util.Pair;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.IntStream;
 
 public class Main {
 
@@ -130,8 +136,24 @@ public class Main {
             """;
 
     public static void main(String[] args) {
-        var graph = new CsvGraphParser().parse(SMALL_GRAPH);
-        EliminationHeuristic heuristic = new MaxCardinalityHeuristic();
-        System.out.println(Arrays.toString(heuristic.compute(graph).toArray()));
+        var graph = new CsvGraphParser().parse(LARGE_GRAPH);
+        List<Pair<EliminationHeuristicFactory<String>, EliminationHeuristic>> pairs = List.of(
+                Pair.of(MinDegreeHeuristic::new, new at.mategka.sda.heuristics.MinDegreeHeuristic()),
+                Pair.of(MinFillHeuristic::new, new at.mategka.sda.heuristics.MinFillHeuristic()),
+                Pair.of(MaxCardinalityHeuristic::new, new at.mategka.sda.heuristics.MaxCardinalityHeuristic())
+        );
+        for (var pair : pairs) {
+            var t1 = System.nanoTime();
+            var order1 = pair.getFirst().eliminationOrder(graph);
+            var t2 = System.nanoTime();
+            var order2 = pair.getSecond().compute(GraphExtensions.shallowCopy(graph));
+            var t3 = System.nanoTime();
+            System.out.println(" Width: " + pair.getFirst().treewidth(graph));
+            System.out.println("Order 1: " + order1);
+            System.out.println(" Time 1: " + (t2 - t1) / 1000000);
+            System.out.println("Order 2: " + order2);
+            System.out.println(" Time 2: " + (t3 - t2) / 1000000);
+            System.out.println("  Ident: " + IntStream.range(0, graph.vertexSet().size()).allMatch(i -> Objects.equals(order1.get(i), order2.get(i))));
+        }
     }
 }

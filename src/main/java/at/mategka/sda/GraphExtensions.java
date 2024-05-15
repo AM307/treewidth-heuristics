@@ -9,7 +9,8 @@ import java.util.List;
 
 public final class GraphExtensions {
 
-    private GraphExtensions() {}
+    private GraphExtensions() {
+    }
 
     public static <V, E, T extends AbstractBaseGraph<? extends V, ? extends E>> T shallowCopy(T graph) {
         return TypeUtil.uncheckedCast(graph.clone());
