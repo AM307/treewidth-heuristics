@@ -13,10 +13,8 @@ import java.util.function.Predicate;
 
 public class MinFillHeuristic<V> implements EliminationHeuristic<V> {
 
-    private final AddressableHeap<Integer, V> heap = new FibonacciHeap<>();
-
-    public MinFillHeuristic(final SimpleGraph<V, ?> graph) {
-        graph.vertexSet().forEach(v -> heap.insert(graph.degreeOf(v), v));
+    public MinFillHeuristic(final SimpleGraph<V, ?> _graph) {
+        // Empty
     }
 
     @Override
@@ -24,6 +22,9 @@ public class MinFillHeuristic<V> implements EliminationHeuristic<V> {
         if (graph.vertexSet().isEmpty()) {
             return new EmptyResult<>();
         }
+
+        AddressableHeap<Integer, V> heap = new FibonacciHeap<>();
+        graph.vertexSet().forEach(v -> heap.insert(graph.degreeOf(v), v));
 
         var first = heap.deleteMin();
         var firstVertex = first.getValue();
