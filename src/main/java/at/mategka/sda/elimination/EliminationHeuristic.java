@@ -2,6 +2,7 @@ package at.mategka.sda.elimination;
 
 import at.mategka.sda.GraphExtensions;
 import at.mategka.sda.elimination.result.*;
+import org.jgrapht.Graphs;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayDeque;
@@ -52,6 +53,19 @@ public interface EliminationHeuristic<V> {
             eliminate(remainingGraph, vertexResult.vertex());
         }
         return result;
+    }
+
+    static <V> int treewidth(SimpleGraph<V, ?> graph, List<V> eliminationOrder) {
+        var remainingGraph = GraphExtensions.shallowCopy(graph);
+        return eliminationOrder.stream()
+                .mapToInt(vertex -> {
+                    var neighbors = Graphs.neighborListOf(remainingGraph, vertex);
+                    var value = neighbors.size();
+                    GraphExtensions.eliminateVertex(remainingGraph, vertex, neighbors);
+                    return value;
+                })
+                .max()
+                .orElse(0);
     }
 
 }
