@@ -37,7 +37,7 @@ public class MinDegreeHeuristic<V> implements EliminationHeuristic<V> {
             var d = next.getKey();
             if (d == graph.vertexSet().size() - 1 && !heap.isEmpty()) {
                 heap.clear();
-                return new FinalAppendResult<>(graph.vertexSet());
+                return new FinalAppendResult<>(new HashSet<>(graph.vertexSet()));
             }
             return new VertexAppendResult<>(v, d);
         }

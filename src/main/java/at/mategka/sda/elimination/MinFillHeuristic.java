@@ -9,6 +9,7 @@ import org.jgrapht.graph.SimpleGraph;
 import org.jheaps.AddressableHeap;
 import org.jheaps.tree.FibonacciHeap;
 
+import java.util.HashSet;
 import java.util.function.Predicate;
 
 public class MinFillHeuristic<V> implements EliminationHeuristic<V> {
@@ -30,7 +31,7 @@ public class MinFillHeuristic<V> implements EliminationHeuristic<V> {
         var firstVertex = first.getValue();
         var firstDegree = first.getKey();
         if (firstDegree == graph.vertexSet().size() - 1 || heap.isEmpty()) {
-            return new FinalAppendResult<>(graph.vertexSet());
+            return new FinalAppendResult<>(new HashSet<>(graph.vertexSet()));
         }
 
         long minFillEdges = getFillEdgeCount(graph, firstVertex);
