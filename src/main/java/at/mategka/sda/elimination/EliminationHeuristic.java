@@ -46,6 +46,9 @@ public interface EliminationHeuristic<V> {
         int result = 0;
         while (true) {
             var nextResult = next(remainingGraph);
+            if (nextResult instanceof FinalAppendResult<V>) {
+                result = Math.max(result, remainingGraph.vertexSet().size() - 1);
+            }
             if (!(nextResult instanceof VertexResult<V> vertexResult)) {
                 break;
             }
