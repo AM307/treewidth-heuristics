@@ -1,11 +1,14 @@
 package at.mategka.sda;
 
+import at.mategka.sda.util.Vector2;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.AbstractBaseGraph;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.util.TypeUtil;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class GraphExtensions {
 
@@ -31,6 +34,12 @@ public final class GraphExtensions {
                 }
             }
         }
+    }
+
+    public static <V, E> Set<Vector2<V>> edgeVectorSet(SimpleGraph<V, E> graph) {
+        return graph.edgeSet().stream()
+                .map(e -> new Vector2<>(graph.getEdgeSource(e), graph.getEdgeTarget(e)))
+                .collect(Collectors.toUnmodifiableSet());
     }
 
 }
