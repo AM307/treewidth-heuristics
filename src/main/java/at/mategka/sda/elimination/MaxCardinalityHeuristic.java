@@ -52,4 +52,10 @@ public class MaxCardinalityHeuristic<V> implements EliminationHeuristic<V> {
         graph.removeVertex(vertex);
     }
 
+    @Override
+    public int treewidth(SimpleGraph<V, ?> graph) {
+        var ordering = eliminationOrder(graph);
+        return EliminationHeuristic.treewidth(graph, ordering);
+    }
+
 }
