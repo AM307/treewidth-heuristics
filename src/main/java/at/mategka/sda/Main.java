@@ -1,9 +1,34 @@
 package at.mategka.sda;
 
+import at.mategka.sda.cli.DecompositionCommand;
+import at.mategka.sda.cli.EvaluationCommand;
+import at.mategka.sda.cli.GenerationCommand;
+import at.mategka.sda.cli.OrderingCommand;
 import at.mategka.sda.elimination.*;
 import at.mategka.sda.io.CsvGraphParser;
+import org.jgrapht.generate.GnpRandomGraphGenerator;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.util.SupplierUtil;
+import picocli.CommandLine;
 
-public class Main {
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.concurrent.Callable;
+
+@CommandLine.Command(
+        name = "treewidth.jar",
+        subcommands = {
+                CommandLine.HelpCommand.class,
+                OrderingCommand.class,
+                DecompositionCommand.class,
+                GenerationCommand.class,
+                EvaluationCommand.class
+        },
+        mixinStandardHelpOptions = true
+)
+public class Main implements Callable<Integer> {
 
     private static final String SMALL_GRAPH = """
             1,2
@@ -126,9 +151,32 @@ public class Main {
             49,50
             """;
 
-    public static void main(String[] args) {
-        var graph = new CsvGraphParser().parse(LARGE_GRAPH);
-        var result = new MinFillHeuristic<>(graph).eliminationOrder(graph);
+    public static void main(String[] args) throws IOException {
+        var cmd = new CommandLine(new Main());
+        if (args.length == 0) {
+            cmd.usage(System.out);
+            System.exit(1);
+        } else {
+            int exitCode = cmd.execute(args);
+            System.exit(exitCode);
+        }
+        var graph = new CsvGraphParser().parse(Files.readString(Paths.get("graphs/graph_n0100_p750_002.csv")));
+        var result = new MinDegreeHeuristic<>(graph).eliminationOrder(graph);
         System.out.println(EliminationHeuristic.treewidth(graph, result));
+        var decomp = TreeDecomposition.fromHeuristic(new MinDegreeHeuristic<>(graph), graph);
+        TreeDecomposition.verify(graph, decomp);
+        System.out.println(TreeDecomposition.treewidth(decomp));
+        GnpRandomGraphGenerator<String, DefaultEdge> generator = new GnpRandomGraphGenerator<>(10, 0.5);
+        SimpleGraph<String, DefaultEdge> g = new SimpleGraph<>(SupplierUtil.createStringSupplier(), SupplierUtil.createSupplier(DefaultEdge.class), false);
+        generator.generateGraph(g);
+        System.out.println("Done");
+        //var result2 = new BruteForceAlgorithm<>(graph).eliminationOrder(graph);
+        //System.out.println(EliminationHeuristic.treewidth(graph, result2));
     }
+
+    @Override
+    public Integer call() {
+        return 0;
+    }
+
 }

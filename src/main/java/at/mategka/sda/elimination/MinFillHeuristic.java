@@ -1,18 +1,19 @@
 package at.mategka.sda.elimination;
 
+import at.mategka.sda.GraphExtensions;
 import at.mategka.sda.elimination.result.EliminationResult;
 import at.mategka.sda.elimination.result.EmptyResult;
 import at.mategka.sda.elimination.result.FinalAppendResult;
 import at.mategka.sda.elimination.result.VertexAppendResult;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.SimpleGraph;
-import org.jheaps.AddressableHeap;
-import org.jheaps.tree.FibonacciHeap;
 
-import java.util.HashSet;
-import java.util.function.Predicate;
+import java.util.*;
 
 public class MinFillHeuristic<V> implements EliminationHeuristic<V> {
+
+    private final Map<V, Set<V>> neighborsMap = new HashMap<>();
+    private final Map<V, Integer> fillInEdges = new HashMap<>();
 
     public MinFillHeuristic(final SimpleGraph<V, ?> _graph) {
         // Empty
@@ -24,27 +25,16 @@ public class MinFillHeuristic<V> implements EliminationHeuristic<V> {
             return new EmptyResult<>();
         }
 
-        AddressableHeap<Integer, V> heap = new FibonacciHeap<>();
-        graph.vertexSet().forEach(v -> heap.insert(graph.degreeOf(v), v));
+        int minFillEdges = Integer.MAX_VALUE;
+        VertexAppendResult<V> minFillVertex = null;
 
-        var first = heap.deleteMin();
-        var firstVertex = first.getValue();
-        var firstDegree = first.getKey();
-        if (firstDegree == graph.vertexSet().size() - 1 || heap.isEmpty()) {
-            return new FinalAppendResult<>(new HashSet<>(graph.vertexSet()));
-        }
-
-        long minFillEdges = getFillEdgeCount(graph, firstVertex);
-        var minFillVertex = new VertexAppendResult<>(firstVertex, firstDegree);
-        if (minFillEdges == 0) {
-            return minFillVertex;
-        }
-
-        while (!heap.isEmpty()) {
-            var next = heap.deleteMin();
-            var v = next.getValue();
-            var d = next.getKey();
-            long fillEdges = getFillEdgeCount(graph, v);
+        for (var v : graph.vertexSet()) {
+            var n = getNeighbors(graph, v);
+            var d = n.size();
+            if (d == graph.vertexSet().size() - 1) {
+                return new FinalAppendResult<>(new HashSet<>(graph.vertexSet()));
+            }
+            int fillEdges = getFillEdgeCount(graph, v);
             if (fillEdges < minFillEdges) {
                 minFillEdges = fillEdges;
                 minFillVertex = new VertexAppendResult<>(v, d);
@@ -54,14 +44,43 @@ public class MinFillHeuristic<V> implements EliminationHeuristic<V> {
         return minFillVertex;
     }
 
-    private long getFillEdgeCount(final SimpleGraph<V, ?> graph, V vertex) {
-        final var neighbors = Graphs.neighborSetOf(graph, vertex);
-        return neighbors.stream()
-                .mapToLong(v -> {
-                    var vn = Graphs.neighborSetOf(graph, v);
-                    return neighbors.stream().filter(Predicate.not(vn::contains)).count() - 1;
-                })
-                .sum();
+    private int getFillEdgeCount(final SimpleGraph<V, ?> graph, V vertex) {
+        if (fillInEdges.containsKey(vertex)) {
+            return fillInEdges.get(vertex);
+        }
+        int fillEdges = 0;
+        var neighborList = new ArrayList<>(getNeighbors(graph, vertex));
+        for (int i = 0; i < neighborList.size(); i++) {
+            for (int j = i + 1; j < neighborList.size(); j++) {
+                V ni = neighborList.get(i);
+                V nj = neighborList.get(j);
+                if (!getNeighbors(graph, ni).contains(nj)) {
+                    fillEdges++;
+                }
+            }
+        }
+        fillInEdges.put(vertex, fillEdges);
+        return fillEdges;
     }
 
+    private Set<V> getNeighbors(final SimpleGraph<V, ?> graph, V vertex) {
+        return neighborsMap.computeIfAbsent(vertex, w -> Graphs.neighborSetOf(graph, w));
+    }
+
+    @Override
+    public void eliminate(SimpleGraph<V, ?> graph, V vertex) {
+        var neighborsSet = neighborsMap.get(vertex);
+        var neighborsList = new ArrayList<>(neighborsSet);
+        neighborsList
+                .forEach(v -> {
+                    fillInEdges.remove(v);
+                    var n = neighborsMap.get(v);
+                    n.remove(vertex);
+                    n.addAll(neighborsList);
+                    n.remove(v);
+                    n.forEach(fillInEdges::remove);
+                });
+        neighborsMap.remove(vertex);
+        GraphExtensions.eliminateVertex(graph, vertex, neighborsList);
+    }
 }
