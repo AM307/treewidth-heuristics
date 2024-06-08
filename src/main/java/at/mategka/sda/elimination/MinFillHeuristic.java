@@ -74,7 +74,7 @@ public class MinFillHeuristic<V> implements EliminationHeuristic<V> {
         neighborsList
                 .forEach(v -> {
                     fillInEdges.remove(v);
-                    var n = neighborsMap.get(v);
+                    var n = getNeighbors(graph, v);
                     n.remove(vertex);
                     n.addAll(neighborsList);
                     n.remove(v);
