@@ -96,7 +96,7 @@ public final class TreeDecomposition {
                 - 1;
     }
 
-    public static <V, E> void verify(SimpleGraph<V, E> graph, SimpleGraph<Bag<V>, ?> decomposition) {
+    public static <V, E> void verify(SimpleGraph<V, E> graph, SimpleGraph<Bag<V>, ?> decomposition) throws IllegalArgumentException {
         assertTree(decomposition);
         assertVerticesCovered(graph, decomposition);
         assertEdgesCovered(graph, decomposition);
