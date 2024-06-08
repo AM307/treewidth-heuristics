@@ -1,9 +1,6 @@
 package at.mategka.sda;
 
-import at.mategka.sda.cli.DecompositionCommand;
-import at.mategka.sda.cli.EvaluationCommand;
-import at.mategka.sda.cli.GenerationCommand;
-import at.mategka.sda.cli.OrderingCommand;
+import at.mategka.sda.cli.*;
 import at.mategka.sda.elimination.*;
 import at.mategka.sda.io.CsvGraphParser;
 import org.jgrapht.generate.GnpRandomGraphGenerator;
@@ -24,7 +21,8 @@ import java.util.concurrent.Callable;
                 OrderingCommand.class,
                 DecompositionCommand.class,
                 GenerationCommand.class,
-                EvaluationCommand.class
+                EvaluationCommand.class,
+                ValidationCommand.class
         },
         mixinStandardHelpOptions = true
 )
