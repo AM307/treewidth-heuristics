@@ -38,19 +38,21 @@ for n in n_values:
 
             x = df[col1]
             y = df[col2]
+            lo = int(min(*x, *y))
+            hi = int(max(*x, *y))
             slope, intercept, r_value, _, _ = linregress(x, y)
-            line_x = np.linspace(x.min(), x.max(), 100)
+            line_x = np.linspace(lo, hi, 100)
             line_y = slope * line_x + intercept
 
             ax.plot(line_x, line_y, color='red', linewidth=2, label=f'r = {r_value:.2f}')
-            ax.legend()
+            ax.legend(bbox_to_anchor=(1, 1), loc=1, borderaxespad=0)
 
             ax.set_xlabel(col1)
             ax.set_ylabel(col2)
             ax.set_title(f'p={p}')
 
-            ax.set_xticks(np.arange(int(x.min()), int(x.max()) + 1, step=1))
-            ax.set_yticks(np.arange(int(y.min()), int(y.max()) + 1, step=1))
+            ax.set_xticks(np.arange(lo, hi + 1, step=1))
+            ax.set_yticks(np.arange(lo, hi + 2, step=1))
 
         fig.suptitle(f'Scatter plots of {col1} vs {col2} for n={n}')
         plt.tight_layout(rect=[0, 0, 1, 0.96])
