@@ -1,6 +1,7 @@
 from collections import Counter
 
 import matplotlib.pyplot as plt
+from matplotlib import ticker
 import numpy as np
 import pandas as pd
 from scipy.stats import linregress
@@ -14,6 +15,7 @@ def read_csv(path: str) -> pd.DataFrame | None:
         return None
     df = df[df[df.columns[0]] != -1]
     return df
+
 
 n_values = ['0010', '0100', '1000']
 p_values = ['250', '500', '750']
@@ -82,12 +84,14 @@ for n in n_values:
         ax.bar(index, values['minf'], width=bar_width, label=f'{name} minf')
         ax.bar(index + bar_width, values['maxc'], width=bar_width, label=f'{name} maxc')
 
-        ax.set_xlabel('p values')
+        ax.set_xlabel('n-p combinations')
         ax.set_ylabel(f'{name} values')
         ax.set_title(f'{name} values of mind, minf, and maxc for n={n}')
         ax.set_xticks(index)
         ax.set_xticklabels(labels)
         ax.set_yscale('log')
+        fmt = ticker.StrMethodFormatter("{x:g}")
+        ax.yaxis.set_minor_formatter(fmt)
         ax.legend()
 
         plt.xticks(rotation=45, ha='right')
