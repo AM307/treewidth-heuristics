@@ -12,6 +12,10 @@ This Markdown file contains usage and build information. For evaluation results,
 
 ```sh
 java -jar treewidth.jar --help
+java -jar treewidth.jar gen --help
+java -jar treewidth.jar order --help
+java -jar treewidth.jar decomp --help
+java -jar treewidth.jar eval --help
 ```
 
 ### 1. Generating G(n,p) Graphs
