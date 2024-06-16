@@ -1,6 +1,12 @@
 # Treewidth Heuristics Evaluation
 
-Note that similar to how floating-point values are used in the CLI application, probabilities are referred to as 250, 500 and 750 instead of 0.25, 0.5 and 0.75.
+In this project, you will find the following pre-computed result artifacts:
+- `graphs`: The CSV graphs generated with the `gen` command using $n$ and $p$ value combinations as per the slides ($n \in \{10, 100, 1000\}, p \in \{0.25, 0.5, 0.75\}$)
+- `results`: The evaluation results generated with the `eval` command using the graphs in `graphs`
+  - Note that the result files also include the mean and median values for each input as the last two rows in the respective CSV file
+- `plots`: The result plots generated with the `plot.py` script (which uses the result CSV files stored in `results`)
+
+Note that similar to how floating-point values are used in the CLI application, probabilities are referred to as 250, 500 and 750 instead of 0.25, 0.5 and 0.75 in the filenames and plots.
 
 ## Min-Degree vs. Min-Fill-In-Edges
 
